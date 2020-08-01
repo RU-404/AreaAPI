@@ -3,15 +3,118 @@
 
 namespace Ru\AreaAPI;
 
-
-use pocketmine\event\Listener;
+use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\Config;
+use Ru\AreaAPI\data\Area;
+use Ru\AreaAPI\listener\eventListener;
 
 /**
  * Class AreaAPI
  * @package Ru\AreaAPI
  */
 
-class AreaAPI extends PluginBase implements Listener {
+class AreaAPI extends PluginBase{
 
+    /**@var Area[]*/
+    public $loadedArea = [];
+
+    /**@var Config*/
+    public $data;
+
+    /**@var array*/
+    public $db;
+
+    /**@var string*/
+    public static $sy = "§b§[ §f! §b]§f ";
+
+    /**@var self*/
+    private static $instance;
+
+    /**
+     * PluginBase Part
+     */
+
+    public function onEnable()
+    {
+        @mkdir($this->getDataFolder());
+        $this->data = new Config($this->getDataFolder().'Areas.yml',Config::YAML);
+        $this->db = $this->data->getAll();
+        $this->getServer()->getPluginManager()->registerEvents(new eventListener($this),$this);
+
+        foreach ($this->db as $item) {
+            $area = Area::deSerialize($item);
+            $this->loadArea($area);
+        }
+    }
+
+    public function onLoad()
+    {
+        self::$instance = $this;
+    }
+
+    public function save()
+    {
+        $this->data->setAll($this->db);
+        $this->data->save();
+    }
+
+    /**
+     * @return static
+     */
+
+    public static function getInstance() : self
+    {
+        return self::$instance;
+    }
+
+    /**
+     * Main Functions
+     */
+
+    /**
+     * @param Vector3 $pos1
+     * @param Vector3 $pos2
+     * @param Vector3|null $warpPos
+     * @param string $levelName
+     * @param string $name
+     * @param string $id
+     *
+     * @return bool
+     */
+
+    public function makeArea(Vector3 $pos1, Vector3 $pos2, ?Vector3 $warpPos = null, string $levelName, string $name, string $id) : bool{
+        if (!isset($this->db)){
+            $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
+            $this->db[$id] = $area->jsonSerialize();
+            $this->save();
+            return true;
+        }else{
+            foreach ($this->db as $value){
+                $area1 = Area::deSerialize($value);
+                if ($area1->isOverlap($pos1,$pos2,$levelName)){
+                    return false;
+                }else continue;
+            }
+            $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
+            $this->db[$id] = $area->jsonSerialize();
+            $this->save();
+            return true;
+        }
+    }
+
+    /**
+     * @param Area $area
+     * @return bool
+     */
+
+    public function loadArea(Area $area) : bool
+    {
+        if(array_search($area,$this->loadedArea)){
+            return false;
+        }else{
+            array_push($this->loadedArea, $area);
+            return true;
+        }
+    }
 }
