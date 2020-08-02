@@ -34,9 +34,6 @@ use Ru\AreaAPI\listener\eventListener;
 
 class AreaAPI extends PluginBase{
 
-    /**@var Area[]*/
-    public $loadedArea = [];
-
     /**@var Config*/
     public $data;
 
@@ -63,11 +60,6 @@ class AreaAPI extends PluginBase{
 
         $this->getServer()->getCommandMap()->register('areaStick',new areaStickCommand());
         $this->getServer()->getCommandMap()->register('makeArea',new makeAreaCommand());
-
-        foreach ($this->db as $item) {
-            $area = Area::deSerialize($item);
-            $this->loadArea($area);
-        }
     }
 
     public function onLoad()
@@ -128,17 +120,30 @@ class AreaAPI extends PluginBase{
     }
 
     /**
-     * @param Area $area
-     * @return bool
+     * @return Area[]|null
      */
 
-    public function loadArea(Area $area) : bool
+    public function getAllAreas() : ?array
     {
-        if(array_search($area,$this->loadedArea)){
-            return false;
+        if (!isset($this->db)){
+            return null;
         }else{
-            array_push($this->loadedArea, $area);
-            return true;
+            $areas = [];
+            foreach ($this->db as $are){
+                $area = Area::deSerialize($are);
+                array_push($areas,$area);
+            }
+            return $areas;
         }
+    }
+
+    /**
+     * @param string $id
+     * @return Area|null
+     */
+
+    public function getArea(string $id) : ?Area
+    {
+        return isset($this->db[$id]) ? Area::deSerialize($this->db[$id]) : null;
     }
 }
