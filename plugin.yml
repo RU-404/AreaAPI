@@ -1,0 +1,18 @@
+name: AreaAPI
+description: This is a plugin that allows you to use the area in PocketMine-MP!
+main: Ru\AreaAPI\AreaAPI
+api: [3.0.0]
+version: Beta_v1
+author: IamRU_
+
+permissions:
+  Area:
+    default: op
+    description: "use All of Area Commands"
+    children:
+      Area.makeArea:
+        default: op
+        description: "can make Area"
+      Area.areaStick:
+        default: op
+        description: "can use AreaStick"
