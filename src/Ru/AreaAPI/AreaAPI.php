@@ -1,11 +1,29 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Ru\AreaAPI;
+
+/*
+ *  _____                _____
+ * |_   _|              |  __ \
+ *   | |  __ _ _ __ ___ | |__) |   _
+ *   | | / _` | '_ ` _ \|  _  / | | |
+ *  _| || (_| | | | | | | | \ \ |_| | ___
+ * |_____\__,_|_| |_| |_|_|  \_\__,_|(___)
+
+
+ *
+ * @author : IamRu_
+ * @api : 3.x.x
+ * @github : github.com/RU-404
+ */
 
 use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use Ru\AreaAPI\command\areaStickCommand;
+use Ru\AreaAPI\command\makeAreaCommand;
 use Ru\AreaAPI\data\Area;
 use Ru\AreaAPI\listener\eventListener;
 
@@ -26,7 +44,7 @@ class AreaAPI extends PluginBase{
     public $db;
 
     /**@var string*/
-    public static $sy = "§b§[ §f! §b]§f ";
+    public static $sy = "§b[ §f! §b]§f ";
 
     /**@var self*/
     private static $instance;
@@ -40,7 +58,11 @@ class AreaAPI extends PluginBase{
         @mkdir($this->getDataFolder());
         $this->data = new Config($this->getDataFolder().'Areas.yml',Config::YAML);
         $this->db = $this->data->getAll();
+
         $this->getServer()->getPluginManager()->registerEvents(new eventListener($this),$this);
+
+        $this->getServer()->getCommandMap()->register('areaStick',new areaStickCommand());
+        $this->getServer()->getCommandMap()->register('makeArea',new makeAreaCommand());
 
         foreach ($this->db as $item) {
             $area = Area::deSerialize($item);
@@ -83,7 +105,7 @@ class AreaAPI extends PluginBase{
      * @return bool
      */
 
-    public function makeArea(Vector3 $pos1, Vector3 $pos2, ?Vector3 $warpPos = null, string $levelName, string $name, string $id) : bool{
+    public function makeArea(Vector3 $pos1, Vector3 $pos2, ?Vector3 $warpPos = null, string $levelName, string $name, string $id) : ?bool{
         if (!isset($this->db)){
             $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
             $this->db[$id] = $area->jsonSerialize();
@@ -93,6 +115,8 @@ class AreaAPI extends PluginBase{
             foreach ($this->db as $value){
                 $area1 = Area::deSerialize($value);
                 if ($area1->isOverlap($pos1,$pos2,$levelName)){
+                    return null;
+                }elseif ($area1->getId() === $id or $area1->getName() === $name){
                     return false;
                 }else continue;
             }
