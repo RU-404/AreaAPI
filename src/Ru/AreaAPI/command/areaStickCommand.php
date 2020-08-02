@@ -15,7 +15,7 @@ class areaStickCommand extends Command
 
     public function __construct()
     {
-        parent::__construct('영역막대기', '영역 설정 막대기를 지급받습니다!', '/영역막대기', ['areaStick']);
+        parent::__construct('영역막대기', '영역 설정 막대기를 지급받습니다!', '/영역막대기', ['areastick']);
     }
 
     /**

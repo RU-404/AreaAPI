@@ -17,7 +17,7 @@ class makeAreaCommand extends Command
 
     public function __construct()
     {
-        parent::__construct('영역생성',"영역을 생성합니다","/영역생성",["/makearea"]);
+        parent::__construct('영역생성',"영역을 생성합니다","/영역생성",["makearea"]);
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args)

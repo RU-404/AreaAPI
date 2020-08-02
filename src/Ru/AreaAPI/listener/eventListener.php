@@ -4,10 +4,11 @@
 namespace Ru\AreaAPI\listener;
 
 
+use pocketmine\block\Block;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\item\Item;
+use pocketmine\Player;
 use Ru\AreaAPI\AreaAPI;
 
 class eventListener implements Listener
@@ -49,11 +50,15 @@ class eventListener implements Listener
         $block = $event->getBlock();
         $player = $event->getPlayer();
 
-        $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $item = $event->getItem();
+        $id = $item->getId();
+        $meta = $item->getDamage();
+        $name = $event->getItem()->getCustomName();
 
-        if ($event->getItem() === Item::get(280,3,1)->setCustomName("§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea"))){
-            $this->data["{$player->getName()}-1"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
-            $player->sendMessage(AreaAPI::$sy."1번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]}");
+        if (($id === 280 and $meta === 3 and $name === "§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea")) and $event->getAction() !== PlayerInteractEvent::RIGHT_CLICK_AIR){
+            $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+
+            $this->setPos1($player,$pos,$block);
         }
     }
 
@@ -66,13 +71,29 @@ class eventListener implements Listener
         $block = $event->getBlock();
         $player = $event->getPlayer();
 
-        $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $item = $event->getItem();
+        $id = $item->getId();
+        $meta = $item->getDamage();
+        $name = $event->getItem()->getCustomName();
 
-        if ($event->getItem() === Item::get(280,3,1)->setCustomName("§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea"))){
+        if (($id === 280 and $meta === 3 and $name === "§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea"))){
+            $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+
+            $this->setPos2($player,$pos,$block);
             $event->setCancelled(true);
-            $this->data["{$player->getName()}-2"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
-            $player->sendMessage(AreaAPI::$sy."2번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]}");
         }
+    }
+
+    private function setPos1(Player $player, array $pos, Block $block)
+    {
+        $this->data["{$player->getName()}-1"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $player->sendMessage(AreaAPI::$sy."1번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]} ]");
+    }
+
+    private function setPos2(Player $player, array $pos, Block $block)
+    {
+        $this->data["{$player->getName()}-2"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $player->sendMessage(AreaAPI::$sy."2번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]} ]");
     }
 
 }
