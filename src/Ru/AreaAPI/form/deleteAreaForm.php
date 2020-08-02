@@ -38,7 +38,7 @@ class deleteAreaForm implements Form
             $player->sendMessage(AreaAPI::$sy."삭제할 영역의 고유 ID를 입력해주세요!");
         }elseif ($data[1] === null){
             $player->sendMessage(AreaAPI::$sy."확인문자가 입력되지 않았습니다!");
-        }elseif (AreaAPI::getInstance()->isAreaExists($data[0])){
+        }elseif (!AreaAPI::getInstance()->isAreaExists($data[0])){
             $player->sendMessage(AreaAPI::$sy."해당 아이디와 일치하는 영역이 존재하지 않습니다!");
         }elseif ($data[1] !== "동의합니다"){
             $player->sendMessage(AreaAPI::$sy."확인문자가 제대로 입력되지 않았습니다!");
