@@ -120,6 +120,32 @@ class AreaAPI extends PluginBase{
     }
 
     /**
+     * @param string $id
+     * @return bool|null
+     */
+
+    public function deleteArea(string $id) : ?bool
+    {
+        if (!isset($this->db[$id])){
+            return null;
+        }else{
+            unset($this->db[$id]);
+            $this->save();
+            return true;
+        }
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+
+    public function isAreaExists(string $id) : bool
+    {
+        return isset($this->db[$id]);
+    }
+
+    /**
      * @return Area[]|null
      */
 
