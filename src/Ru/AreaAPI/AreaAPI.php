@@ -23,6 +23,7 @@ use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use Ru\AreaAPI\command\areaStickCommand;
+use Ru\AreaAPI\command\deleteAreaCommand;
 use Ru\AreaAPI\command\makeAreaCommand;
 use Ru\AreaAPI\data\Area;
 use Ru\AreaAPI\listener\eventListener;
@@ -60,6 +61,7 @@ class AreaAPI extends PluginBase{
 
         $this->getServer()->getCommandMap()->register('areaStick',new areaStickCommand());
         $this->getServer()->getCommandMap()->register('makeArea',new makeAreaCommand());
+        $this->getServer()->getCommandMap()->register('deleteArea',new deleteAreaCommand());
     }
 
     public function onLoad()
