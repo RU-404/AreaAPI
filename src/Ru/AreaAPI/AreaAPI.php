@@ -26,6 +26,8 @@ use Ru\AreaAPI\command\areaStickCommand;
 use Ru\AreaAPI\command\deleteAreaCommand;
 use Ru\AreaAPI\command\makeAreaCommand;
 use Ru\AreaAPI\data\Area;
+use Ru\AreaAPI\event\deleteAreaEvent;
+use Ru\AreaAPI\event\makeAreaEvent;
 use Ru\AreaAPI\listener\eventListener;
 
 /**
@@ -115,9 +117,14 @@ class AreaAPI extends PluginBase{
                 }else continue;
             }
             $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
-            $this->db[$id] = $area->jsonSerialize();
-            $this->save();
-            return true;
+            $ev = new makeAreaEvent($area);
+            if ($ev->isCancelled()){
+                return false;
+            }else{
+                $this->db[$id] = $area->jsonSerialize();
+                $this->save();
+                return true;
+            }
         }
     }
 
@@ -131,9 +138,15 @@ class AreaAPI extends PluginBase{
         if (!isset($this->db[$id])){
             return null;
         }else{
-            unset($this->db[$id]);
-            $this->save();
-            return true;
+            $ev = new deleteAreaEvent($this->getArea($id));
+            $ev->call();
+            if ($ev->isCancelled()){
+                return false;
+            }else{
+                unset($this->db[$id]);
+                $this->save();
+                return true;
+            }
         }
     }
 
