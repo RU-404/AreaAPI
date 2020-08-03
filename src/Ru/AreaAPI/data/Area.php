@@ -4,8 +4,11 @@
 namespace Ru\AreaAPI\data;
 
 use JsonSerializable;
+use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\Server;
+use Ru\AreaAPI\exception\AreaException;
 
 /**
  * Class Area
@@ -151,6 +154,19 @@ class Area implements JsonSerializable
     public function setWarpPos(Vector3 $warpPos): void
     {
         $this->warpPos = $warpPos;
+    }
+
+    /**
+     * @param Player $player
+     */
+
+    public function teleportToWarpPos(Player $player) :void
+    {
+        $level = Server::getInstance()->getLevelByName($this->levelName);
+
+        if ($level === null)throw new AreaException("The non-existent world is set as the object's world.");
+
+        $player->teleport(new Position($this->warpPos,$level),$player->getYaw(),$player->getPitch());
     }
 
     /**
