@@ -167,7 +167,8 @@ class Area implements JsonSerializable
 
         if ($level === null)throw new AreaException("The non-existent world is set as the object's world.");
 
-        $player->teleport(new Position($this->warpPos,$level),$player->getYaw(),$player->getPitch());
+        $player->setLevel($level);
+        $player->teleport($this->warpPos,$player->getYaw(),$player->getPitch());
     }
 
     /**
