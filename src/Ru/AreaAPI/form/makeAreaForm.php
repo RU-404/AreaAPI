@@ -17,20 +17,20 @@ class makeAreaForm implements Form
     /**@var Vector3*/
     public $pos2;
 
-    /**@var string*/
-    public $levelName;
+    /**@var int*/
+    public $levelId;
 
     /**
      * makeAreaForm constructor.
      * @param Vector3 $pos1
      * @param Vector3 $pos2
-     * @param string $levelName
+     * @param int $levelId
      */
-    public function __construct(Vector3 $pos1, Vector3 $pos2, string $levelName)
+    public function __construct(Vector3 $pos1, Vector3 $pos2, int $levelId)
     {
         $this->pos1 = $pos1;
         $this->pos2 = $pos2;
-        $this->levelName = $levelName;
+        $this->levelId = $levelId;
     }
 
     /**
@@ -74,7 +74,7 @@ class makeAreaForm implements Form
         }elseif (mb_strlen($data[1]) >= 20){
             $player->sendMessage(AreaAPI::$sy."영역의 고유 ID는 20자 이상이어선 안됩니다!");
         }else{
-            $a = AreaAPI::getInstance()->makeArea($this->pos1,$this->pos2,null,$this->levelName,$data[0],$data[1]);
+            $a = AreaAPI::getInstance()->makeArea($this->pos1,$this->pos2,$this->levelId,$data[0],$data[1],null);
             if ($a === true){
                 $player->sendMessage(AreaAPI::$sy."영역이 성공적으로 생성되었습니다! [ 영역의 이름 : {$data[0]} ], [ 영역의 ID : {$data[1]} ]");
             }elseif ($a === null){
