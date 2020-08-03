@@ -8,6 +8,7 @@ use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
+use Ru\AreaAPI\AreaAPI;
 use Ru\AreaAPI\exception\AreaException;
 
 /**
@@ -27,8 +28,8 @@ class Area implements JsonSerializable
     /**@var Vector3*/
     private $warpPos;
 
-    /**@var string*/
-    private $levelName;
+    /**@var int*/
+    private $levelId;
 
     /**@var string*/
     private $name;
@@ -41,12 +42,12 @@ class Area implements JsonSerializable
      * @param Vector3 $pos1
      * @param Vector3 $pos2
      * @param Vector3|null $warpPos
-     * @param string $levelName
+     * @param int $levelId
      * @param string $name
      * @param string $id
      */
 
-    public function __construct(Vector3 $pos1, Vector3 $pos2, ?Vector3 $warpPos = null, string $levelName, string $name, string $id)
+    public function __construct(Vector3 $pos1, Vector3 $pos2, int $levelId, string $name, string $id, ?Vector3 $warpPos = null)
     {
         $this->setPos1(new Vector3($pos1->getFloorX(),$pos1->getFloorY(),$pos1->getFloorZ()));
         $this->setPos2(new Vector3($pos2->getFloorX(),$pos2->getFloorY(),$pos2->getFloorZ()));
@@ -55,7 +56,7 @@ class Area implements JsonSerializable
         }else{
             $this->setWarpPos(new Vector3($warpPos->getFloorX(),$warpPos->getFloorY(),$warpPos->getFloorZ()));
         }
-        $this->setLevelName($levelName);
+        $this->setLevelId($levelId);
         $this->setName($name);
         $this->setId($id);
     }
@@ -69,11 +70,11 @@ class Area implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getLevelName(): string
+    public function getLevelId(): int
     {
-        return $this->levelName;
+        return $this->levelId;
     }
 
     /**
@@ -117,11 +118,11 @@ class Area implements JsonSerializable
     }
 
     /**
-     * @param string $levelName
+     * @param int $levelId
      */
-    public function setLevelName(string $levelName): void
+    public function setLevelId(int $levelId): void
     {
-        $this->levelName = $levelName;
+        $this->levelId = $levelId;
     }
 
     /**
@@ -162,26 +163,27 @@ class Area implements JsonSerializable
 
     public function teleportToWarpPos(Player $player) :void
     {
-        $level = Server::getInstance()->getLevelByName($this->levelName);
+        $level = AreaAPI::getInstance()->getServer()->getLevel($this->levelId);
 
         if ($level === null)throw new AreaException("The non-existent world is set as the object's world.");
 
-        $player->teleport(new Position($this->warpPos,$level),$player->getYaw(),$player->getPitch());
+        $player->setLevel($level);
+        $player->teleport($this->warpPos,$player->getYaw(),$player->getPitch());
     }
 
     /**
      * @param Vector3 $pos3
      * @param Vector3 $pos4
-     * @param string $levelName1
+     * @param int $levelId1
      * @return bool
      */
 
-    public function isOverlap(Vector3 $pos3,Vector3 $pos4,string $levelName1) : bool
+    public function isOverlap(Vector3 $pos3,Vector3 $pos4,int $levelId1) : bool
     {
         $pos1 = $this->getPos1();
         $pos2 = $this->getPos2();
 
-        $levelName = $this->levelName;
+        $levelId = $this->levelId;
 
         $xXxX = [$pos1->getX(),$pos2->getX(),$pos3->getX(),$pos4->getX()];
         $zZzZ = [$pos1->getZ(),$pos2->getZ(),$pos3->getZ(),$pos4->getZ()];
@@ -201,7 +203,7 @@ class Area implements JsonSerializable
         $disArea1Z = abs($zZzZ1[0] - $zZzZ1[1]);
         $disArea2Z = abs($zZzZ1[2] - $zZzZ1[3]);
 
-        if (($disX <= $disArea1X + $disArea2X) and ($disZ <= $disArea1Z + $disArea2Z) and $levelName === $levelName1){
+        if (($disX <= $disArea1X + $disArea2X) and ($disZ <= $disArea1Z + $disArea2Z) and $levelId === $levelId1){
             return true;
         }else{
             return false;
@@ -219,9 +221,9 @@ class Area implements JsonSerializable
         $pos1 = $this->getPos1();
         $pos2 = $this->getPos2();
 
-        $levelName = $this->levelName;
+        $levelId = $this->levelId;
 
-        if ((($pos1->getX()<=$player->getX() and $pos2->getX()>=$player->getX()) or (($pos1->getX()>=$player->getX() and $pos2->getX()<=$player->getX()))) and (($pos1->getZ()<=$player->getZ() and $pos2->getZ()>=$player->getZ()) or (($pos1->getZ()>=$player->getZ() and $pos2->getZ()<=$player->getZ()))) and $levelName === $player->getLevel()->getFolderName()){
+        if ((($pos1->getX()<=$player->getX() and $pos2->getX()>=$player->getX()) or (($pos1->getX()>=$player->getX() and $pos2->getX()<=$player->getX()))) and (($pos1->getZ()<=$player->getZ() and $pos2->getZ()>=$player->getZ()) or (($pos1->getZ()>=$player->getZ() and $pos2->getZ()<=$player->getZ()))) and $levelId === $player->getLevel()->getId()){
             return true;
         }else{
             return false;
@@ -236,10 +238,10 @@ class Area implements JsonSerializable
         return [
             'pos1' => array($this->pos1->getX(),$this->pos1->getY(),$this->pos1->getZ()),
             'pos2' => array($this->pos2->getX(),$this->pos2->getY(),$this->pos2->getZ()),
-            'warpPos' => array($this->warpPos->getX(),$this->warpPos->getY(),$this->warpPos->getZ()),
-            'levelName' => $this->getLevelName(),
+            'levelId' => $this->getLevelId(),
             'name' => $this->getName(),
-            'id' => $this->getId()
+            'id' => $this->getId(),
+            'warpPos' => array($this->warpPos->getX(),$this->warpPos->getY(),$this->warpPos->getZ())
         ];
     }
 
@@ -247,10 +249,10 @@ class Area implements JsonSerializable
     {
         return new self(new Vector3($data['pos1'][0],$data['pos1'][1],$data['pos1'][2]),
             new Vector3($data['pos2'][0],$data['pos2'][1],$data['pos2'][2]),
-        new Vector3($data['warpPos'][0],$data['warpPos'][1],$data['warpPos'][2]),
-        $data['levelName'],
+        $data['levelId'],
         $data['name'],
-        $data['id']
+        $data['id'],
+            new Vector3($data['warpPos'][0],$data['warpPos'][1],$data['warpPos'][2])
         );
     }
 }

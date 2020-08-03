@@ -58,7 +58,7 @@ class eventListener implements Listener
         if (($id === 280 and $meta === 3 and $name === "§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea")) and $event->getAction() !== PlayerInteractEvent::RIGHT_CLICK_AIR){
             $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
 
-            $this->setPos1($player,$pos,$block);
+            $this->setPos1($player,$pos,$block,$player->getLevel()->getId());
         }
     }
 
@@ -79,20 +79,34 @@ class eventListener implements Listener
         if (($id === 280 and $meta === 3 and $name === "§e☆§fAREASTICK§e☆§r") and ($player->hasPermission("Area") or $player->hasPermission("Area.makeArea"))){
             $pos = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
 
-            $this->setPos2($player,$pos,$block);
+            $this->setPos2($player,$pos,$block,$player->getLevel()->getId());
             $event->setCancelled(true);
         }
     }
 
-    private function setPos1(Player $player, array $pos, Block $block)
+    /**
+     * @param Player $player
+     * @param array $pos
+     * @param Block $block
+     * @param int $levelId
+     */
+
+    private function setPos1(Player $player, array $pos, Block $block, int $levelId)
     {
-        $this->data["{$player->getName()}-1"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $this->data["{$player->getName()}-1"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$levelId];
         $player->sendMessage(AreaAPI::$sy."1번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]} ]");
     }
 
-    private function setPos2(Player $player, array $pos, Block $block)
+    /**
+     * @param Player $player
+     * @param array $pos
+     * @param Block $block
+     * @param int $levelId
+     */
+
+    private function setPos2(Player $player, array $pos, Block $block, int $levelId)
     {
-        $this->data["{$player->getName()}-2"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$block->getLevel()->getFolderName()];
+        $this->data["{$player->getName()}-2"] = [$block->getFloorX(),$block->getFloorY(),$block->getFloorZ(),$levelId];
         $player->sendMessage(AreaAPI::$sy."2번째 좌표가 지정되었습니다! [ {$pos[0]}, {$pos[1]}, {$pos[2]} ], [ 월드 : {$pos[3]} ]");
     }
 

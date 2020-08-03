@@ -8,6 +8,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\Server;
 use Ru\AreaAPI\AreaAPI;
 use Ru\AreaAPI\form\makeAreaForm;
 use Ru\AreaAPI\listener\eventListener;
@@ -27,7 +28,7 @@ class makeAreaCommand extends Command
             return;
         }
         if (isset(eventListener::getInstance()->data[$sender->getName()."-1"]) and isset(eventListener::getInstance()->data[$sender->getName()."-2"])){
-            if (eventListener::getInstance()->data[$sender->getName()."-1"][3] === eventListener::getInstance()->data[$sender->getName()."-2"][3]){
+            if (eventListener::getInstance()->data[$sender->getName()."-1"][3] === eventListener::getInstance()->data[$sender->getName()."-2"][3] and Server::getInstance()->getLevel(eventListener::getInstance()->data[$sender->getName()."-1"][3])){
                 $sender->sendForm(new makeAreaForm(
                     new Vector3(eventListener::getInstance()->data[$sender->getName()."-1"][0],
                     eventListener::getInstance()->data[$sender->getName()."-1"][1],

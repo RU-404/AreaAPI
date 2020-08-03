@@ -94,29 +94,34 @@ class AreaAPI extends PluginBase{
      * @param Vector3 $pos1
      * @param Vector3 $pos2
      * @param Vector3|null $warpPos
-     * @param string $levelName
+     * @param int $levelId
      * @param string $name
      * @param string $id
      *
      * @return bool
      */
 
-    public function makeArea(Vector3 $pos1, Vector3 $pos2, ?Vector3 $warpPos = null, string $levelName, string $name, string $id) : ?bool{
+    public function makeArea(Vector3 $pos1, Vector3 $pos2, int $levelId, string $name, string $id, ?Vector3 $warpPos = null) : ?bool{
         if (!isset($this->db)){
-            $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
-            $this->db[$id] = $area->jsonSerialize();
-            $this->save();
-            return true;
+            $area = new Area($pos1,$pos2,$levelId,$name,$id,$warpPos);
+            $ev = new makeAreaEvent($area);
+            if ($ev->isCancelled()){
+                return false;
+            }else{
+                $this->db[$id] = $area->jsonSerialize();
+                $this->save();
+                return true;
+            }
         }else{
             foreach ($this->db as $value){
                 $area1 = Area::deSerialize($value);
-                if ($area1->isOverlap($pos1,$pos2,$levelName)){
+                if ($area1->isOverlap($pos1,$pos2,$levelId)){
                     return null;
                 }elseif ($area1->getId() === $id or $area1->getName() === $name){
                     return false;
                 }else continue;
             }
-            $area = new Area($pos1,$pos2,$warpPos,$levelName,$name,$id);
+            $area = new Area($pos1,$pos2,$levelId,$name,$id,$warpPos);
             $ev = new makeAreaEvent($area);
             if ($ev->isCancelled()){
                 return false;
