@@ -2,7 +2,7 @@ name: AreaAPI
 description: This is a plugin that allows you to use the area in PocketMine-MP!
 main: Ru\AreaAPI\AreaAPI
 api: [3.0.0]
-version: 0.0.1
+version: 0.0.2
 author: IamRU_
 
 permissions:
