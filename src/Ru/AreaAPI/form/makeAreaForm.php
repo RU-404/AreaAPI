@@ -80,7 +80,7 @@ class makeAreaForm implements Form
             }elseif ($a === null){
                 $player->sendMessage(AreaAPI::$sy."생성하려고 하는 곳에 이미 영역이 존재합니다!");
             }elseif ($a === false){
-                $player->sendMessage(AreaAPI::$sy."이미 같은 아이디나 이름이 존재합니다!");
+                $player->sendMessage(AreaAPI::$sy."영역 생성에 실패하였습니다!");
             }else return;
         }
     }

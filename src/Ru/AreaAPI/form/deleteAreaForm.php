@@ -43,8 +43,12 @@ class deleteAreaForm implements Form
         }elseif ($data[1] !== "동의합니다"){
             $player->sendMessage(AreaAPI::$sy."확인문자가 제대로 입력되지 않았습니다!");
         }else{
-            AreaAPI::getInstance()->deleteArea($data[0]);
-            $player->sendMessage(AreaAPI::$sy."성공적으로 영역이 삭제되었습니다!");
+            $a = AreaAPI::getInstance()->deleteArea($data[0]);
+            if ($a === false or null){
+                $player->sendMessage(AreaAPI::$sy."영역 삭제에 실패하였습니다!");
+            }elseif ($a === true){
+                $player->sendMessage(AreaAPI::$sy."성공적으로 영역이 삭제되었습니다!");
+            }else return;
         }
     }
 
