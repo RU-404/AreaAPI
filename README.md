@@ -8,10 +8,16 @@ in PocketMine-MP!
 <pre><code>#Make Area and Delete Area
 AreaAPI::getInstance()->makeArea($params1...)
 AreaAPI::getInstance()->deleteArea($id)
+
+
 #Get All Areas. It Returns Area[]|null
 AreaAPI::getInstance()->getAllAreas()
+
+
 #Get Area that have same id. It Returns Area|null
 AreaAPI::getInstance()->getArea($id)
+
+
 #Teleport Player to Area's WarpPos
 $area = new Area($params1...);
 $area->teleportToWarpPos(Player $player)</code></pre>
