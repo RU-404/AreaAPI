@@ -4,10 +4,8 @@
 namespace Ru\AreaAPI\data;
 
 use JsonSerializable;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 use Ru\AreaAPI\AreaAPI;
 use Ru\AreaAPI\exception\AreaException;
 
